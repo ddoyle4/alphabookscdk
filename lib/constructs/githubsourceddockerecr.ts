@@ -5,6 +5,7 @@ import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions"
 import * as codebuild from "aws-cdk-lib/aws-codebuild"
 import * as iam from "aws-cdk-lib/aws-iam";
 import { TagStatus } from "aws-cdk-lib/aws-ecr";
+import * as cdk from "aws-cdk-lib";
 
 export interface GithubSourcedDockerLambdaProps {
     readonly githubOwnerAlias: string;
@@ -15,9 +16,9 @@ export interface GithubSourcedDockerLambdaProps {
 
 export class GithubSourcedDockerEcr extends Construct {
 
-    private repository: ecr.Repository;
-    private pipeline: codepipeline.Pipeline;
-    private builderRole: iam.Role;
+    private readonly repository: ecr.Repository;
+    private readonly pipeline: codepipeline.Pipeline;
+    private readonly builderRole: iam.Role;
 
     constructor(scope: Construct, id: string, props: GithubSourcedDockerLambdaProps) {
         super(scope, id);
@@ -33,6 +34,20 @@ export class GithubSourcedDockerEcr extends Construct {
             props.githubBranch,
             props.githubAuthTokenSecretAlias
         );
+
+        this.createCfnOutputs(id);
+    }
+
+    public getRepository(): ecr.Repository {
+        return this.repository;
+    }
+
+    private createCfnOutputs(id: string) {
+        new cdk.CfnOutput(this, `${id}EcrRepoArn`, {
+            value: this.repository.repositoryArn,
+            description: `${id}'s ECR repo ARN`,
+            exportName: `${id}EcrRepoArn`
+        });
     }
 
     private createBuilderRole(id: string): iam.Role {
@@ -157,7 +172,7 @@ export class GithubSourcedDockerEcr extends Construct {
             repositoryName: `${id.toLowerCase()}-repo`,
             lifecycleRules: [
                 {
-                    maxImageAge: Duration.days(7),
+                    maxImageAge: Duration.days(3),
                     description: "Remove untagged images after 3 days",
                     tagStatus: TagStatus.UNTAGGED,
                     rulePriority: 1

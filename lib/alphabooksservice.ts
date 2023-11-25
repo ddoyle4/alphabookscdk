@@ -5,7 +5,7 @@ import { aws_ecr as ecr } from "aws-cdk-lib"
 import { User } from "aws-cdk-lib/aws-iam"
 import * as codedeploy from "aws-cdk-lib/aws-codedeploy"
 import { LambdaDeployment } from "./constructs/lambdadeploymentgroup";
-import { GithubSourcedDockerEcr } from "./constructs/githubsourceddockerlecr";
+import { GithubSourcedDockerEcr } from "./constructs/githubsourceddockerecr";
 
 export class AlphaBooksService extends Construct {
   constructor(scope: Construct, id: string) {
