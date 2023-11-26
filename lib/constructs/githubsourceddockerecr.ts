@@ -6,13 +6,8 @@ import * as codebuild from "aws-cdk-lib/aws-codebuild"
 import * as iam from "aws-cdk-lib/aws-iam";
 import { TagStatus } from "aws-cdk-lib/aws-ecr";
 import * as cdk from "aws-cdk-lib";
+import { GithubSourceRepo } from "./github-source-repo";
 
-export interface GithubSourcedDockerLambdaProps {
-    readonly githubOwnerAlias: string;
-    readonly githubRepo: string;
-    readonly githubBranch: string;
-    readonly githubAuthTokenSecretAlias: string;
-}
 
 export class GithubSourcedDockerEcr extends Construct {
 
@@ -20,7 +15,7 @@ export class GithubSourcedDockerEcr extends Construct {
     private readonly pipeline: codepipeline.Pipeline;
     private readonly builderRole: iam.Role;
 
-    constructor(scope: Construct, id: string, props: GithubSourcedDockerLambdaProps) {
+    constructor(scope: Construct, id: string, props: GithubSourceRepo) {
         super(scope, id);
 
         this.repository = this.createRepository(id);
